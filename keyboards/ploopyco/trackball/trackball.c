@@ -66,6 +66,11 @@ uint8_t  OptLowPin         = OPT_ENC1;
 bool     debug_encoder     = false;
 bool     is_drag_scroll    = false;
 
+// attempt to let DRAG_SCROLL DPI be less than 100, using new method and these
+#define PLOOPY_DRAGSCROLL_DENOMINATOR 10;
+static int _dragscroll_accumulator_x = 0;
+static int _dragscroll_accumulator_y = 0;
+
 __attribute__((weak)) bool encoder_update_user(uint8_t index, bool clockwise) { return true; }
 
 bool encoder_update_kb(uint8_t index, bool clockwise) {
@@ -121,16 +126,28 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     if (is_drag_scroll) {
 #ifdef PLOOPY_DRAGSCROLL_H_INVERT
         // Invert horizontal scroll direction
-        mouse_report.h = -mouse_report.x;
+        _dragscroll_accumulator_x += -mouse_report.x;
 #else
-        mouse_report.h = mouse_report.x;
+        _dragscroll_accumulator_x += mouse_report.x;
 #endif
 #ifdef PLOOPY_DRAGSCROLL_INVERT
         // Invert vertical scroll direction
-        mouse_report.v = -mouse_report.y;
+        _dragscroll_accumulator_y += -mouse_report.y;
 #else
-        mouse_report.v = mouse_report.y;
+        _dragscroll_accumulator_y += mouse_report.y;
 #endif
+        int div_x = _dragscroll_accumulator_x / PLOOPY_DRAGSCROLL_DENOMINATOR;
+        int div_y = _dragscroll_accumulator_y / PLOOPY_DRAGSCROLL_DENOMINATOR;
+
+        if (div_x != 0) {
+            mouse_report.h += div_x;
+            _dragscroll_accumulator_x -= div_x * PLOOPY_DRAGSCROLL_DENOMINATOR;
+        }
+
+        if (div_y != 0) {
+            mouse_report.v += div_y;
+            _dragscroll_accumulator_y -= div_y * PLOOPY_DRAGSCROLL_DENOMINATOR;
+        }
         mouse_report.x = 0;
         mouse_report.y = 0;
     }

@@ -40,7 +40,7 @@ typedef enum {
 } led_cmd_t;
 
 // State
-static bool   scroll_enabled  = true;
+static bool   scroll_enabled  = false;
 static bool   num_lock_state  = false;
 static bool   caps_lock_state = false;
 static bool   in_cmd_window   = false;
