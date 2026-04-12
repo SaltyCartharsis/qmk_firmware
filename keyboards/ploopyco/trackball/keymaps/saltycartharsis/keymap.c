@@ -35,7 +35,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT( KC_BTN1, KC_BTN3, KC_BTN2, LT(1, KC_BTN4), LT(2, KC_BTN5)),
+    [0] = LAYOUT( MS_BTN1, MS_BTN3, MS_BTN2, LT(1, MS_BTN4), LT(2, MS_BTN5) ),
     [1] = LAYOUT( DRAG_SCROLL, _______, _______, _______, _______ ),
     [2] = LAYOUT( DPI_CONFIG, _______, JANKY   , _______, _______ )
 };
